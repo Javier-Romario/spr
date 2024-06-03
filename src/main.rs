@@ -61,11 +61,6 @@ fn main() -> color_eyre::Result<()> {
     println!("{:?}", model);
     let mut terminal = tui::init_terminal()?;
 
-
-    // for debug
-    // let model = Model::default();
-
-
     while model.running_state != RunningState::Done {
         terminal.draw(|f| view(&mut model, f))?;
 
@@ -77,7 +72,6 @@ fn main() -> color_eyre::Result<()> {
             current_msg = update(&mut model, current_msg.unwrap());
         }
     }
-
 
     tui::restore_terminal()?;
 
@@ -97,7 +91,6 @@ fn update(model: &mut Model, msg: Message) -> Option<Message> {
         }
         Message::Read => {
             model.paused = false;
-            
             // Get a random string from the vector
             let mut rng = thread_rng();
             let words = ["HELLO", "Something", "Else", "were getting the hang"];
@@ -121,11 +114,6 @@ fn update(model: &mut Model, msg: Message) -> Option<Message> {
     None
 }
 
-// fn render_app(frame: &mut Frame) {
-//     let greeting = Paragraph::new("Hello World! (press 'q' to quit)");
-//     frame.render_widget(greeting, frame.size());
-// }
-
 fn view(model: &mut Model, f: &mut Frame) {
     //... use `ratatui` functions to draw your UI based on the model's state
     // if model.running_state == RunningState::Running {
@@ -133,7 +121,6 @@ fn view(model: &mut Model, f: &mut Frame) {
         Paragraph::new(format!("lead: {} highlight: {} follow:{}", model.leading, model.highlight, model.follow_word)),
         f.size(),
     );
-    // }
 }
 
 fn handle_event(_: &Model) -> color_eyre::Result<Option<Message>> {
@@ -156,22 +143,6 @@ fn handle_key(key: event::KeyEvent) -> Option<Message> {
     }
 }
 
-// let text = vec![
-//         Line::from(vec![
-//             Span::raw("First"),
-//             Span::styled("line", Style::new().green().italic()),
-//             ".".into(),
-//         ]),
-//         Line::from("Second line".red()),
-//         "Third line".into(),
-//     ];
-//
-//     Paragraph::new(text)
-//         .block(Block::bordered().title("Paragraph"))
-//         .style(Style::new().white().on_black())
-//         .alignment(Alignment::Center)
-//         .wrap(Wrap { trim: true });
-//
 mod tui {
     use crossterm::{
         terminal::{
