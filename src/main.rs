@@ -3,10 +3,22 @@ use ratatui::{prelude::*, widgets::*};
 use crossterm::event::{self, Event, KeyCode};
 use std::io;
 
+use rand::seq::SliceRandom;
+use rand::thread_rng;
+
+
+#[derive(Debug, Default, PartialEq, Eq)]
+enum RunningState {
+    #[default]
+    Running,
+    Paused,
+    Done,
+}
+
 #[derive(Debug)]
 struct Model {
     // full_text: String,
-    main_word: String,
+    // main_word: String,
     leading: String,
     highlight: String,
     follow_word: String,
@@ -23,7 +35,7 @@ impl Default for Model {
 
         Self {
             // full_text: buffer,
-            main_word: String::from("main word"),
+            // main_word: String::from("main word"),
             leading: String::from("ma"),
             highlight: String::from("i"),
             follow_word: String::from("n"),
@@ -34,13 +46,6 @@ impl Default for Model {
     }
 }
 
-#[derive(Debug, Default, PartialEq, Eq)]
-enum RunningState {
-    #[default]
-    Running,
-    Paused,
-    Done,
-}
 
 #[derive(PartialEq)]
 enum Message {
@@ -53,14 +58,14 @@ enum Message {
 
 fn main() -> color_eyre::Result<()> {
     tui::install_panic_hook();
+    let mut model = Model::default();
+    println!("{:?}", model);
     let mut terminal = tui::init_terminal()?;
 
-    let mut model = Model::default();
 
     // for debug
     // let model = Model::default();
 
-    // println!("{:?}", model);
 
     while model.running_state != RunningState::Done {
         terminal.draw(|f| view(&mut model, f))?;
@@ -76,6 +81,7 @@ fn main() -> color_eyre::Result<()> {
 
 
     tui::restore_terminal()?;
+
     Ok(())
 }
 
@@ -83,15 +89,22 @@ fn update(model: &mut Model, msg: Message) -> Option<Message> {
     match msg {
         // Match each possible message and decide how the model should change
         Message::Pause => {
-            if model.paused {
-                model.paused = false;
-                model.running_state = RunningState::Paused;
-            } else if !model.paused {
-                model.paused = true;
-            }
+            model.paused = !model.paused;
+            model.running_state = if model.paused {
+                RunningState::Paused
+            } else {
+                RunningState::Running
+            };
         }
         Message::Read => {
             model.paused = false;
+            
+            // Get a random string from the vector
+            let mut rng = thread_rng();
+            let words = ["HELLO", "Something", "Else", "were getting the hang"];
+            if let Some(random_str) = words.choose(&mut rng) {
+                model.leading = random_str.to_string(); 
+            }
         }
         Message::Quit => {
             // You can handle cleanup and exit here
@@ -137,10 +150,10 @@ fn handle_event(_: &Model) -> color_eyre::Result<Option<Message>> {
 
 fn handle_key(key: event::KeyEvent) -> Option<Message> {
     match key.code {
-    //     KeyCode::Char('j') => Some(Message::Increment),
+        //  KeyCode::Char('j') => Some(Message::Increment),
         KeyCode::Char(' ') => Some(Message::Pause),
         KeyCode::Char('q') => Some(Message::Quit),
-        _ => None,
+        _ => Some(Message::Read),
     }
 }
 
