@@ -1,11 +1,10 @@
+use std::io;
 use std::time::Duration;
 use ratatui::{prelude::*, widgets::*};
 use crossterm::event::{self, Event, KeyCode};
-use std::io;
 
 use rand::seq::SliceRandom;
 use rand::thread_rng;
-
 
 #[derive(Debug, Default, PartialEq, Eq)]
 enum RunningState {
