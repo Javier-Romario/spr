@@ -35,9 +35,9 @@ impl Default for Model {
         Self {
             // full_text: buffer,
             // main_word: String::from("main word"),
-            leading: String::from("ma"),
-            highlight: String::from("i"),
-            follow_word: String::from("n"),
+            leading: "ma".to_string(),
+            highlight: "i".to_string(),
+            follow_word: "n".to_string(),
             // speed: 200,
             paused: false,
             running_state: RunningState::Running,
@@ -117,8 +117,10 @@ fn update(model: &mut Model, msg: Message) -> Option<Message> {
 fn view(model: &mut Model, f: &mut Frame) {
     //... use `ratatui` functions to draw your UI based on the model's state
     // if model.running_state == RunningState::Running {
+    let line = Line::from(vec![Span::raw(&model.leading), Span::styled(&model.highlight, Style::default().fg(Color::Red)), Span::raw(&model.follow_word)]);
+    let text = Text::from(line);
     f.render_widget(
-        Paragraph::new(format!("lead: {} highlight: {} follow:{}", model.leading, model.highlight, model.follow_word)),
+        Paragraph::new(text),
         f.size(),
     );
 }
