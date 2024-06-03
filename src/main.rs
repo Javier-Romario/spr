@@ -71,6 +71,10 @@ fn main() -> color_eyre::Result<()> {
         while current_msg.is_some() {
             current_msg = update(&mut model, current_msg.unwrap());
         }
+
+        if !model.paused {
+            update(&mut model, Message::Read);
+        }
     }
 
     tui::restore_terminal()?;
